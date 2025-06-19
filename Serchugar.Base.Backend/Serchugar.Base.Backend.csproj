@@ -13,14 +13,28 @@
 
         <!-- Package Version -->
         <PackageId>Serchugar.Base.Backend</PackageId>
-        <Version>0.1.0-preview</Version>
+        <Version>0.1.0-preview.1</Version>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
 
         <!-- Visible metadata in nuget.org -->
         <Title>Base Backend</Title>
         <Description>
             Generic base classes for Repository service, Controller and Response&lt;T&gt;.
         </Description>
+        <PackageReleaseNotes>First stable release of base backend classes.</PackageReleaseNotes>
+        <PackageProjectUrl>https://github.com/serchugar/Base/tree/dev</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/serchugar/Base/tree/dev</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <Authors>Serchugar</Authors>
+        <PackageTags>backend;repository;controller;response;generic</PackageTags>
     </PropertyGroup>
+    
+    <!-- Same README and LICENSE as in github repo -->
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="" />
+        <None Include="..\LICENSE" Pack="true" PackagePath="" />
+    </ItemGroup>
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
