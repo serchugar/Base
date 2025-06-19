@@ -1,9 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <!-- Current target -->
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+
+        <!-- NuGet packaging -->
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <IncludeSymbols>false</IncludeSymbols>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+        <!-- Package Version -->
+        <PackageId>Serchugar.Base.Backend</PackageId>
+        <Version>0.1.0-preview</Version>
+
+        <!-- Visible metadata in nuget.org -->
+        <Title>Base Backend</Title>
+        <Description>
+            Generic base classes for Repository service, Controller and Response&lt;T&gt;.
+        </Description>
     </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
+    </ItemGroup>
 
 </Project>
