@@ -1,4 +1,5 @@
 ﻿namespace Serchugar.Base.Backend;
+
 public interface IResponse
 {
     ResponseCodes Code { get; }
