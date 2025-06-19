@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{93BBCF8D-055D-4E96-A364-EF887FF0F9A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serchugar.Base.Backend", "Serchugar.Base.Backend\Serchugar.Base.Backend.csproj", "{8CFBCE00-6EA3-4716-89FA-2B3F53E6321A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5B727571-8145-4FFC-8897-A6AF61BCD53F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serchugar.Base.Backend", "Serchugar.Base.Backend", "{AE5FCAD5-1270-4252-B0D1-B0DD9D61C58E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serchugar.Base.Backend.Tests.Unit", "Serchugar.Base.Backend.Tests.Unit\Serchugar.Base.Backend.Tests.Unit.csproj", "{0CC69731-2ED3-4A49-AAE5-FBEDB1944833}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8CFBCE00-6EA3-4716-89FA-2B3F53E6321A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CFBCE00-6EA3-4716-89FA-2B3F53E6321A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CFBCE00-6EA3-4716-89FA-2B3F53E6321A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CFBCE00-6EA3-4716-89FA-2B3F53E6321A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CC69731-2ED3-4A49-AAE5-FBEDB1944833}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CC69731-2ED3-4A49-AAE5-FBEDB1944833}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CC69731-2ED3-4A49-AAE5-FBEDB1944833}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CC69731-2ED3-4A49-AAE5-FBEDB1944833}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8CFBCE00-6EA3-4716-89FA-2B3F53E6321A} = {93BBCF8D-055D-4E96-A364-EF887FF0F9A6}
+		{AE5FCAD5-1270-4252-B0D1-B0DD9D61C58E} = {5B727571-8145-4FFC-8897-A6AF61BCD53F}
+		{0CC69731-2ED3-4A49-AAE5-FBEDB1944833} = {AE5FCAD5-1270-4252-B0D1-B0DD9D61C58E}
+	EndGlobalSection
+EndGlobal
