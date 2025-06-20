@@ -5,6 +5,7 @@
         <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>Serchugar.Base.Backend</RootNamespace>
 
         <!-- NuGet packaging -->
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -13,7 +14,7 @@
 
         <!-- Package Version -->
         <PackageId>Serchugar.Base.Backend</PackageId>
-        <Version>0.1.0-preview.2</Version>
+        <Version>0.1.0-preview.3</Version>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
 
@@ -22,7 +23,10 @@
         <Description>
             Generic base classes for Repository service, Controller and Response&lt;T&gt;.
         </Description>
-        <PackageReleaseNotes>Added net8.0 as target framework to increase compatibility.</PackageReleaseNotes>
+        <PackageReleaseNotes>
+            Moved Response&lt;T&gt; class to Serchugar.Base.Shared. 
+            Also made so that the Create ActionResult returns the url of the created object.
+        </PackageReleaseNotes>
         <PackageProjectUrl>https://github.com/serchugar/Base/tree/dev</PackageProjectUrl>
         <RepositoryUrl>https://github.com/serchugar/Base/tree/dev</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -39,6 +43,7 @@
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
+        <PackageReference Include="Serchugar.Base.Shared" Version="0.1.0-preview.1" />
     </ItemGroup>
 
 </Project>

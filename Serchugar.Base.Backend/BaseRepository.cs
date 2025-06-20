@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Serchugar.Base.Shared;
 
 namespace Serchugar.Base.Backend;
 
@@ -243,6 +244,8 @@ public abstract class BaseRepository<T> (DbContext context, string singular = "E
         }
     }
 
+    // TODO: Add a stopOnFailure param to prevent the bulk creation unless no entity has conflicts. Otherwise return a dictionary of Object:Status and create only
+    // those that have no conflicts
     protected virtual async Task<Response<string>> BulkCreateAsync(IEnumerable<T> entities, int batchSize = 500, CancellationToken ct = default)
     {
         List<T> buffer = new(batchSize);
