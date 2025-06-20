@@ -1,4 +1,4 @@
-﻿namespace Serchugar.Base.Backend;
+﻿namespace Serchugar.Base.Shared;
 
 public interface IResponse
 {
@@ -36,19 +36,9 @@ public class Response<T> : IResponse
 // If new ResponseCodes need to be added, must be added here, in ResponseExtension's IsSuccess and IsError methods, and in BaseController's SetResponse
 /// <summary>Response Codes to propagate the state of the results in each layer of an application</summary>
 /// <SuccessCodes>
-/// Success <br />
-/// Created <br />
-/// Updated <br />
-/// Deleted <br />
-/// Empty   <br />
-/// </SuccessCodes>
-/// <br/>
+/// Success <br /> Created <br /> Updated <br /> Deleted <br /> Empty   <br /> </SuccessCodes> <br/>
 /// <ErrorCodes>
-/// NotFound     <br/>
-/// Unauthorized <br/>
-/// BadRequest   <br/>
-/// Conflict     <br/>
-/// Error        <br/>
+/// NotFound <br/> Unauthorized <br/> Forbidden <br/> BadRequest <br/> Conflict <br/> Error <br/>
 /// </ErrorCodes>
 public enum ResponseCodes
 {
@@ -62,6 +52,7 @@ public enum ResponseCodes
     // Error codes
     NotFound,
     Unauthorized,
+    Forbidden,
     BadRequest,
     Conflict,
     Error
@@ -79,6 +70,7 @@ public static class ResponseExtensions
     public static bool IsError(this ResponseCodes code) => code is
         ResponseCodes.NotFound or
         ResponseCodes.Unauthorized or
+        ResponseCodes.Forbidden or
         ResponseCodes.BadRequest or
         ResponseCodes.Conflict or
         ResponseCodes.Error;
