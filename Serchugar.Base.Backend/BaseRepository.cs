@@ -24,6 +24,7 @@ public abstract class BaseRepository<T> (DbContext context, string singular = "E
         }
     }
     
+    // TODO: Add overload using Guid id
     protected virtual async Task<Response<T>> GetByIdAsync(int id, CancellationToken ct = default)
     {
         if (id <= 0) return Response<T>.FromError(ResponseCodes.BadRequest, "Id must be greater than zero");
@@ -139,6 +140,7 @@ public abstract class BaseRepository<T> (DbContext context, string singular = "E
         }
     }
 
+    // TODO: Add overload using Guid id
     protected virtual async Task<Response<T>> DeleteAsync(int id, CancellationToken ct = default)
     {
         if (id <= 0) return Response<T>.FromError(ResponseCodes.BadRequest, "Id must be greater than zero");
@@ -176,6 +178,9 @@ public abstract class BaseRepository<T> (DbContext context, string singular = "E
         }
     }
     
+    // TODO: Delete this one after both delete by id and guid is implemented.
+    // That way it could be checked if the entity exists.
+    // Those two cases should cover all scenarios (maybe also add bigint (int64))
     protected virtual async Task<Response<T>> DeleteAsync(T entity, CancellationToken ct = default)
     {
         IDbContextTransaction? transaction = null;
@@ -244,8 +249,8 @@ public abstract class BaseRepository<T> (DbContext context, string singular = "E
         }
     }
 
-    // TODO: Add a stopOnFailure param to prevent the bulk creation unless no entity has conflicts. Otherwise return a dictionary of Object:Status and create only
-    // those that have no conflicts
+    // TODO: Add a cancelOnFailure param to prevent the bulk creation unless no entity has conflicts. Otherwise return a dictionary of Object:Status and create only
+    // those that have no conflicts. Same for Update and Delete.
     protected virtual async Task<Response<string>> BulkCreateAsync(IEnumerable<T> entities, int batchSize = 500, CancellationToken ct = default)
     {
         List<T> buffer = new(batchSize);
