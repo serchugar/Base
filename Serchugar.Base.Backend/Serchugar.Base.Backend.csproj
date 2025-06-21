@@ -6,6 +6,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>Serchugar.Base.Backend</RootNamespace>
+        
+        <Configurations>Shared;Backend</Configurations>
+        <Platforms>AnyCPU</Platforms>
 
         <!-- NuGet packaging -->
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -14,7 +17,7 @@
 
         <!-- Package Version -->
         <PackageId>Serchugar.Base.Backend</PackageId>
-        <Version>0.1.0-preview.3</Version>
+        <Version>0.1.0-preview.4</Version>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
 
@@ -24,8 +27,9 @@
             Generic base classes for Repository service, Controller and Response&lt;T&gt;.
         </Description>
         <PackageReleaseNotes>
-            Moved Response&lt;T&gt; class to Serchugar.Base.Shared. 
-            Also made so that the Create ActionResult returns the url of the created object.
+            Added Guid overload for GetById and Delete in BaseRepository.cs. 
+            Added XML comments to everything. 
+            Added ActionResult 200 OK for bulk create, update and delete operations.
         </PackageReleaseNotes>
         <PackageProjectUrl>https://github.com/serchugar/Base/tree/dev</PackageProjectUrl>
         <RepositoryUrl>https://github.com/serchugar/Base/tree/dev</RepositoryUrl>
@@ -43,7 +47,7 @@
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
-        <PackageReference Include="Serchugar.Base.Shared" Version="0.1.0-preview.1" />
+        <PackageReference Include="Serchugar.Base.Shared" Version="0.1.0-preview.2" />
     </ItemGroup>
 
 </Project>

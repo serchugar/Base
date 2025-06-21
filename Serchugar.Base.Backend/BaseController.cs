@@ -63,12 +63,12 @@ public abstract class BaseController : ControllerBase
     /// 200 <see cref="OkResult"/> for bulk create. <see cref="Response{T}.Data"/> must be a string in this case.
     /// </returns>
     /// <exception cref="InvalidOperationException">
-    /// Thrown if <typeparamref name="T"/> does not implement <see cref="IPrimarykey"/>, preventing retrieval of the entity's identifier.
+    /// Thrown if <typeparamref name="T"/> does not implement <see cref="IPrimaryKey"/>, preventing retrieval of the entity's identifier.
     /// </exception>
     private ActionResult<T> CreateWithLocation<T>(Response<T> response)
     {
         // Create entity. POST
-        if (response.Data is IPrimarykey singleEntity)
+        if (response.Data is IPrimaryKey singleEntity)
             return CreatedAtAction(
                 actionName: RouteNames.GetById,
                 controllerName: null,
@@ -82,7 +82,7 @@ public abstract class BaseController : ControllerBase
         
         // This uses reflection but in theory it should never happen if things done right, as all classes should inherit
         // from IPrimaryKey to be able to get their id for the CreateWithLocation
-        throw new InvalidOperationException($"Make sure class {typeof(T).Name} inherits from {nameof(IPrimarykey)} and set the property 'public {nameof(IPrimarykey)}.{nameof(IPrimarykey.Id)} => <class id property>'");
+        throw new InvalidOperationException($"Make sure class {typeof(T).Name} inherits from {nameof(IPrimaryKey)} and set the property 'public {nameof(IPrimaryKey)}.{nameof(IPrimaryKey.Id)} => <class id property>'");
     }
 
     /// <summary>
