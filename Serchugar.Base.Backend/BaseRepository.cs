@@ -11,8 +11,8 @@ public abstract class BaseRepository<T> (DbContext context, string singular = "E
     {
         try
         {
-            IEnumerable<T> result = await context.Set<T>().ToListAsync(ct);
-            if (!result.Any()) return Response<IEnumerable<T>>.FromSuccess(ResponseCodes.Empty, result);
+            IEnumerable<T> result = await context.Set<T>().IgnoreAutoIncludes().ToListAsync(ct);
+            if (!result.Any()) return Response<IEnumerable<T>>.FromSuccess(ResponseCodes.Empty, []);
             
             return Response<IEnumerable<T>>.FromSuccess(ResponseCodes.Success, result);
         }
@@ -24,7 +24,6 @@ public abstract class BaseRepository<T> (DbContext context, string singular = "E
         }
     }
     
-    // TODO: Add overload using Guid id
     protected virtual async Task<Response<T>> GetByIdAsync(int id, CancellationToken ct = default)
     {
         if (id <= 0) return Response<T>.FromError(ResponseCodes.BadRequest, "Id must be greater than zero");
@@ -44,12 +43,35 @@ public abstract class BaseRepository<T> (DbContext context, string singular = "E
         }
     }
     
-    protected virtual async Task<Response<IEnumerable<T>>> GetByFilterAsync(Expression<Func<T, bool>> expression, CancellationToken ct = default)
+    protected virtual async Task<Response<T>> GetByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        if (id == Guid.Empty) return Response<T>.FromError(ResponseCodes.BadRequest, "Id must be a non-empty GUID");
+        
+        try
+        {
+            T? entity = await context.FindAsync<T>([id], ct);
+            if (entity is null) return Response<T>.FromError(ResponseCodes.NotFound, $"{singular} not found");
+            
+            return Response<T>.FromSuccess(ResponseCodes.Success, entity);
+        }
+        catch (Exception ex)
+        {
+            return Response<T>.FromError(
+                ResponseCodes.Error,
+                ex.InnerException?.Data["MessageText"]?.ToString() ?? ex.Message);
+        }
+    }
+    
+    protected virtual async Task<Response<IEnumerable<T>>> GetByFilterAsync(Expression<Func<T, bool>> expression, bool withAutoIncludes = false, CancellationToken ct = default)
     {
         try
         {
-            IEnumerable<T> result = await context.Set<T>().Where(expression).ToListAsync(ct);
-            if (!result.Any()) return Response<IEnumerable<T>>.FromSuccess(ResponseCodes.Empty, result);
+            IQueryable<T> query;
+            if (withAutoIncludes) query = context.Set<T>();
+            else query = context.Set<T>().IgnoreAutoIncludes();
+            
+            IEnumerable<T> result = await query.Where(expression).ToListAsync(ct);
+            if (!result.Any()) return Response<IEnumerable<T>>.FromSuccess(ResponseCodes.Empty, []);
         
             return Response<IEnumerable<T>>.FromSuccess(ResponseCodes.Success, result);
         }
@@ -61,11 +83,15 @@ public abstract class BaseRepository<T> (DbContext context, string singular = "E
         }
     }
 
-    protected virtual async Task<Response<T>> GetFirstByFilterAsync(Expression<Func<T, bool>> expression, CancellationToken ct = default)
+    protected virtual async Task<Response<T>> GetFirstByFilterAsync(Expression<Func<T, bool>> expression, bool withAutoIncludes = false, CancellationToken ct = default)
     {
         try
         {
-            T? entity = await context.Set<T>().Where(expression).FirstOrDefaultAsync(expression, ct);
+            IQueryable<T> query;
+            if (withAutoIncludes) query = context.Set<T>();
+            else query = context.Set<T>().IgnoreAutoIncludes();
+            
+            T? entity = await query.Where(expression).FirstOrDefaultAsync(expression, ct);
             if (entity is null) return Response<T>.FromError(ResponseCodes.NotFound, $"{singular} not found");
             
             return Response<T>.FromSuccess(ResponseCodes.Success, entity);
@@ -140,7 +166,6 @@ public abstract class BaseRepository<T> (DbContext context, string singular = "E
         }
     }
 
-    // TODO: Add overload using Guid id
     protected virtual async Task<Response<T>> DeleteAsync(int id, CancellationToken ct = default)
     {
         if (id <= 0) return Response<T>.FromError(ResponseCodes.BadRequest, "Id must be greater than zero");
@@ -178,9 +203,43 @@ public abstract class BaseRepository<T> (DbContext context, string singular = "E
         }
     }
     
-    // TODO: Delete this one after both delete by id and guid is implemented.
-    // That way it could be checked if the entity exists.
-    // Those two cases should cover all scenarios (maybe also add bigint (int64))
+    protected virtual async Task<Response<T>> DeleteAsync(Guid id, CancellationToken ct = default)
+    {
+        if (id == Guid.Empty) return Response<T>.FromError(ResponseCodes.BadRequest, "Id must be a non-empty GUID");
+
+        T? entity = null;
+        IDbContextTransaction? transaction = null;
+        try
+        {
+            entity = await context.FindAsync<T>([id], ct);
+            if (entity is null) return Response<T>.FromError(ResponseCodes.NotFound, $"{singular} not found");
+            
+            transaction = await context.Database.BeginTransactionAsync(ct);
+            context.Set<T>().Remove(entity);
+
+            await context.SaveChangesAsync(ct);
+            await transaction.CommitAsync(ct);
+
+            return Response<T>.FromSuccess(ResponseCodes.Deleted, entity);
+        }
+        catch (Exception ex)
+        {
+            if (transaction is not null)
+            {
+                await transaction.RollbackAsync(ct);
+                context.Entry(entity!).State = EntityState.Detached;
+            }
+
+            return Response<T>.FromError(
+                ResponseCodes.Error,
+                ex.InnerException?.Data["MessageText"]?.ToString() ?? ex.Message);
+        }
+        finally
+        {
+            if (transaction is not null) await transaction.DisposeAsync();
+        }
+    }
+    
     protected virtual async Task<Response<T>> DeleteAsync(T entity, CancellationToken ct = default)
     {
         IDbContextTransaction? transaction = null;
