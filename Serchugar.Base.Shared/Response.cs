@@ -1,4 +1,8 @@
-﻿namespace Serchugar.Base.Shared;
+﻿using System.Collections;
+using System.Net;
+using System.Net.Http.Json;
+
+namespace Serchugar.Base.Shared;
 
 public interface IResponse
 {
@@ -29,7 +33,119 @@ public class Response<T> : IResponse
     public static Response<T> FromError(ResponseCodes code, string errorMessage)
     {
         if (!code.IsError()) throw new ArgumentException($"Expected {code} to be error", nameof(code));
+        if (code == ResponseCodes.Forbidden) return new(code, default, null);
         return new(code, default, errorMessage);   
+    }
+
+    public static async Task<Response<T>> FromHttpResponseAsync(HttpResponseMessage httpResponse)
+    {
+        HttpMethod method = httpResponse.RequestMessage?.Method ?? HttpMethod.Get;
+
+        if (httpResponse.IsSuccessStatusCode)
+        {
+            ResponseCodes successCode;
+            T data;
+            switch (httpResponse.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    // Bulk Create
+                    if (method == HttpMethod.Post && typeof(T) == typeof(string))
+                    {
+                        successCode = ResponseCodes.Created;
+                        string message;
+                        try { message = (await httpResponse.Content.ReadFromJsonAsync<string>())!; }
+                        catch (Exception) { throw new InvalidOperationException("Content of response has wrong format or is empty json"); }
+                        data = (T)(object)message;
+                        return FromSuccess(successCode, data);
+                    }
+                    // Bulk Update
+                    if (method == HttpMethod.Put && typeof(T) == typeof(string))
+                    {
+                        successCode = ResponseCodes.Updated;
+                        string message;
+                        try { message = (await httpResponse.Content.ReadFromJsonAsync<string>())!; }
+                        catch (Exception) { throw new InvalidOperationException("Content of response has wrong format or is empty json"); }
+                        data = (T)(object)message;
+                        return FromSuccess(successCode, data);
+                    }
+                    // Bulk Delete
+                    if (method == HttpMethod.Delete && typeof(T) == typeof(string))
+                    {
+                        successCode = ResponseCodes.Deleted;
+                        string message;
+                        try { message = (await httpResponse.Content.ReadFromJsonAsync<string>())!; }
+                        catch (Exception) { throw new InvalidOperationException("Content of response has wrong format or is empty json"); }
+                        data = (T)(object)message;
+                        return FromSuccess(successCode, data);
+                    }
+                    
+                    try { data = (await httpResponse.Content.ReadFromJsonAsync<T>())!; }
+                    catch (Exception) { throw new InvalidOperationException("Content of response has wrong format or is empty json"); }
+
+                    // Get All
+                    if (data is ICollection collection)
+                    {
+                        successCode = collection.Count == 0 
+                            ? ResponseCodes.Empty
+                            : ResponseCodes.Success;
+                        return FromSuccess(successCode, data);
+                    }
+                    if (data is IEnumerable && typeof(T) != typeof(string))
+                    {
+                        IEnumerator enumerator = ((IEnumerable)data).GetEnumerator();
+                        using (enumerator as IDisposable)
+                            successCode = enumerator.MoveNext()
+                                ? ResponseCodes.Success
+                                : ResponseCodes.Empty;
+                        return FromSuccess(successCode, data);
+                    }
+                    
+                    // Get Entity
+                    successCode = ResponseCodes.Success;
+                    return FromSuccess(successCode, data);
+                
+                // Create
+                case HttpStatusCode.Created:
+                    successCode = ResponseCodes.Created;
+                    try { data = (await httpResponse.Content.ReadFromJsonAsync<T>())!; }
+                    catch (Exception) { throw new InvalidOperationException("Content of response has wrong format or is empty json"); }
+                    return FromSuccess(successCode, data);
+                
+                case HttpStatusCode.NoContent:
+                    // Delete
+                    if (method == HttpMethod.Delete)
+                    {
+                        successCode = ResponseCodes.Deleted;
+                        return FromSuccess(successCode, default!);
+                    }
+                    
+                    // Update
+                    successCode = ResponseCodes.Updated;
+                    return FromSuccess(successCode, default!);
+                
+                default:
+                    throw new InvalidOperationException($"Status code not supported: ({(int)httpResponse.StatusCode}) {httpResponse.StatusCode}");
+            }
+        }
+
+        // Only one that has no content body. ReadFromJsonAsync would throw exception if content body empty
+        if (httpResponse.StatusCode == HttpStatusCode.Forbidden) return FromError(ResponseCodes.Forbidden, string.Empty);
+        
+        // TODO: Think for better solutions for this. An invalid content format 
+        string errorMessage;
+        try { errorMessage = (await httpResponse.Content.ReadFromJsonAsync<string>())!; }
+        catch (Exception) { throw new InvalidOperationException("Content of response has wrong format or is empty json"); }
+        
+        ResponseCodes errorCode = httpResponse.StatusCode switch
+        {
+            HttpStatusCode.NotFound => ResponseCodes.NotFound,
+            HttpStatusCode.Unauthorized => ResponseCodes.Unauthorized,
+            HttpStatusCode.BadRequest => ResponseCodes.BadRequest,
+            HttpStatusCode.Conflict => ResponseCodes.Conflict,
+            HttpStatusCode.InternalServerError => ResponseCodes.Error,
+            _ => throw new InvalidOperationException($"Status code not supported: ({(int)httpResponse.StatusCode}) {httpResponse.StatusCode}")
+        };
+        return FromError(errorCode, errorMessage);
     }
 }
 
