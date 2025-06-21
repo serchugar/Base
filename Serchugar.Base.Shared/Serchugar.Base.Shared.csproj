@@ -31,6 +31,9 @@
         <RepositoryType>git</RepositoryType>
         <Authors>Serchugar</Authors>
         <PackageTags>backend;repository;controller;response;generic</PackageTags>
+        
+        <Configurations>Shared;Backend</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <!-- Same README and LICENSE as in github repo -->

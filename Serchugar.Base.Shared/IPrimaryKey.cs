@@ -1,9 +1,38 @@
 ﻿namespace Serchugar.Base.Shared;
 
-public interface IPrimarykey
+/// <summary>
+/// This should be implemented by entities to standardize primary key access. Necessary for constructing URLs when creating resources with CreatedAtAction.
+/// </summary>
+/// <example>
+/// Usage in an entity:
+/// <code>
+/// public class User : IPrimaryKey
+/// {
+///     public int UserId { get; set; } // Can be a Guid as well
+///     public object IPrimaryKey.Id => UserId;
+///
+/// 
+///     public string Name { get; set; }
+/// }
+/// </code>
+/// </example>
+public interface IPrimaryKey
 {
     /// <summary>
-    /// For Ids of type Int, BigInt, Guid
+    /// This should be implemented by entities to standardize primary key access. Necessary for constructing URLs when creating resources with CreatedAtAction.
     /// </summary>
+    /// <example>
+    /// Usage in an entity:
+    /// <code>
+    /// public class User : IPrimaryKey
+    /// {
+    ///     public int UserId { get; set; } // Can be a Guid as well
+    ///     public object IPrimaryKey.Id => UserId;
+    ///
+    /// 
+    ///     public string Name { get; set; }
+    /// }
+    /// </code>
+    /// </example>
     public object Id { get; }
 }
