@@ -6,6 +6,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>Serchugar.Base.Shared</RootNamespace>
+        
+        <Configurations>Shared;Backend</Configurations>
+        <Platforms>AnyCPU</Platforms>
 
         <!-- NuGet packaging -->
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -14,26 +17,24 @@
 
         <!-- Package Version -->
         <PackageId>Serchugar.Base.Shared</PackageId>
-        <Version>0.1.0-preview.1</Version>
+        <Version>0.1.0-preview.2</Version>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
 
         <!-- Visible metadata in nuget.org -->
         <Title>Base Shared</Title>
         <Description>
-            Shared classes for other Serchugar.Base packages;.
+            Shared classes for other Serchugar.Base packages.
         </Description>
         <PackageReleaseNotes>
-            Moved Response&lt;T&gt; from Serchugar.Base.Backend and added IPrimaryKey static class.
+            Added Response&lt;T&gt;.FromHttpResponseAsync() Factory method and Added XML docs in code. 
+            Renamed IPrimarykey to IPrimaryKey.
         </PackageReleaseNotes>
         <PackageProjectUrl>https://github.com/serchugar/Base/tree/dev</PackageProjectUrl>
         <RepositoryUrl>https://github.com/serchugar/Base/tree/dev</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <Authors>Serchugar</Authors>
         <PackageTags>backend;repository;controller;response;generic</PackageTags>
-        
-        <Configurations>Shared;Backend</Configurations>
-        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <!-- Same README and LICENSE as in github repo -->
