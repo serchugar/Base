@@ -7,7 +7,7 @@
         <Nullable>enable</Nullable>
         <RootNamespace>Serchugar.Base.Shared</RootNamespace>
         
-        <Configurations>Shared;Backend</Configurations>
+        <Configurations>Shared;Backend;Tests</Configurations>
         <Platforms>AnyCPU</Platforms>
 
         <!-- NuGet packaging -->

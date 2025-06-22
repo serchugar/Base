@@ -109,9 +109,11 @@ public class ResponseFactoryTests
     public async Task BulkCreate_Returns_Created()
     {
         string message = "500 countries created";
+        var content = new StringContent(message);
+        content.Headers.ContentType!.MediaType = "text/plain";
         HttpResponseMessage httpResponse = new(HttpStatusCode.OK)
         {
-            Content = JsonContent.Create(message),
+            Content = content,
             RequestMessage = new(HttpMethod.Post, "foo/api/countries/import")
         };
         var response = await Response<string>.FromHttpResponseAsync(httpResponse);
@@ -145,9 +147,11 @@ public class ResponseFactoryTests
     public async Task BulkUpdate_Returns_Updated()
     {
         string message = "500 countries updated";
+        var content = new StringContent(message);
+        content.Headers.ContentType!.MediaType = "text/plain";
         HttpResponseMessage httpResponse = new(HttpStatusCode.OK)
         {
-            Content = JsonContent.Create(message),
+            Content = content,
             RequestMessage = new(HttpMethod.Put, "foo/api/countries/bulk")
         };
         var response = await Response<string>.FromHttpResponseAsync(httpResponse);
@@ -181,9 +185,11 @@ public class ResponseFactoryTests
     public async Task BulkDelete_Returns_Deleted()
     {
         string message = "500 countries deleted";
+        var content = new StringContent(message);
+        content.Headers.ContentType!.MediaType = "text/plain";
         HttpResponseMessage httpResponse = new(HttpStatusCode.OK)
         {
-            Content = JsonContent.Create(message),
+            Content = content,
             RequestMessage = new(HttpMethod.Delete, "foo/api/countries/bulk")
         };
         var response = await Response<string>.FromHttpResponseAsync(httpResponse);
@@ -202,9 +208,11 @@ public class ResponseFactoryTests
     public async Task Problem_ActionResult_Returns_Error()
     {
         string errorMessage = "Database exception";
+        var content = new StringContent(errorMessage);
+        content.Headers.ContentType!.MediaType = "text/plain";
         HttpResponseMessage httpResponse = new(HttpStatusCode.InternalServerError)
         {
-            Content = JsonContent.Create(errorMessage),
+            Content = content,
             RequestMessage = new(HttpMethod.Get, "foo/api/countries/1") // Http Verb does not matter here
         };
         var response = await Response<CountryDTO>.FromHttpResponseAsync(httpResponse);
@@ -236,16 +244,45 @@ public class ResponseFactoryTests
         });
     }
 
-    [Test, Category(nameof(Exception))]
-    public async Task NotSupportedHttpStatusCode_Returns_Exception()
+    [Test, Category(nameof(ResponseCodes.Conflict))]
+    public async Task Conflict_ActionResult_Returns_Conflict()
+    {
+        string errorMessage = "Country already exists";
+        var content = new StringContent(errorMessage);
+        content.Headers.ContentType!.MediaType = "text/plain";
+        HttpResponseMessage httpResponse = new(HttpStatusCode.Conflict)
+        {
+            Content = content,
+            RequestMessage = new(HttpMethod.Post, "foo/api/countries/1") // Http Verb does not matter here
+        };
+        var response = await Response<CountryDTO>.FromHttpResponseAsync(httpResponse);
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Code, Is.EqualTo(ResponseCodes.Conflict));    
+            Assert.That(response.Data, Is.Null);
+            Assert.That(response.ErrorMessage, Is.Not.Null);
+            Assert.That(response.ErrorMessage, Is.EqualTo(errorMessage));
+        });
+        Console.WriteLine(response.ErrorMessage);
+    }
+
+    [Test, Category(nameof(ResponseCodes.Error))]
+    public async Task NotSupportedHttpStatusCode_Returns_Error()
     {
         HttpResponseMessage httpResponse = new(HttpStatusCode.MisdirectedRequest) // Random http status code that is not implemented
         {
             Content = JsonContent.Create("whatever"),
             RequestMessage = new(HttpMethod.Get, "foo/api/countries/1") // Http Verb does not matter here
         };
-        var ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            await Response<CountryDTO>.FromHttpResponseAsync(httpResponse));
-        Console.WriteLine(ex.Message);
+        var response = await Response<CountryDTO>.FromHttpResponseAsync(httpResponse);
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Code, Is.EqualTo(ResponseCodes.Error));    
+            Assert.That(response.Data, Is.Null);
+            Assert.That(response.ErrorMessage, Is.Not.Null);
+        });
+        Console.WriteLine(response.ErrorMessage);
     }
 }

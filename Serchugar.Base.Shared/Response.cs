@@ -155,7 +155,7 @@ public class Response<T> : IResponse
                     {
                         successCode = ResponseCodes.Created;
                         string message;
-                        try { message = (await httpResponse.Content.ReadFromJsonAsync<string>())!; }
+                        try { message = await httpResponse.Content.ReadAsStringAsync(); }
                         catch (Exception) { return FromError(ResponseCodes.Error, "Content of response has wrong format or is empty json"); }
                         data = (T)(object)message;
                         return FromSuccess(successCode, data);
@@ -165,7 +165,7 @@ public class Response<T> : IResponse
                     {
                         successCode = ResponseCodes.Updated;
                         string message;
-                        try { message = (await httpResponse.Content.ReadFromJsonAsync<string>())!; }
+                        try { message = await httpResponse.Content.ReadAsStringAsync(); }
                         catch (Exception) { return FromError(ResponseCodes.Error, "Content of response has wrong format or is empty json"); }
                         data = (T)(object)message;
                         return FromSuccess(successCode, data);
@@ -175,7 +175,7 @@ public class Response<T> : IResponse
                     {
                         successCode = ResponseCodes.Deleted;
                         string message;
-                        try { message = (await httpResponse.Content.ReadFromJsonAsync<string>())!; }
+                        try { message = await httpResponse.Content.ReadAsStringAsync(); }
                         catch (Exception) { return FromError(ResponseCodes.Error, "Content of response has wrong format or is empty json"); }
                         data = (T)(object)message;
                         return FromSuccess(successCode, data);
@@ -192,9 +192,9 @@ public class Response<T> : IResponse
                             : ResponseCodes.Success;
                         return FromSuccess(successCode, data);
                     }
-                    if (data is IEnumerable && typeof(T) != typeof(string))
+                    if (data is IEnumerable enumerable && typeof(T) != typeof(string))
                     {
-                        IEnumerator enumerator = ((IEnumerable)data).GetEnumerator();
+                        IEnumerator enumerator = enumerable.GetEnumerator();
                         using (enumerator as IDisposable)
                             successCode = enumerator.MoveNext()
                                 ? ResponseCodes.Success
@@ -238,7 +238,7 @@ public class Response<T> : IResponse
         if (httpResponse.StatusCode == HttpStatusCode.Forbidden) return FromError(ResponseCodes.Forbidden, string.Empty);
         
         string errorMessage;
-        try { errorMessage = (await httpResponse.Content.ReadFromJsonAsync<string>())!; }
+        try { errorMessage = await httpResponse.Content.ReadAsStringAsync(); }
         catch (Exception) { return FromError(ResponseCodes.Error, "Content of response has wrong format or is empty json"); }
         
         ResponseCodes errorCode;
