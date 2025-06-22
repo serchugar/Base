@@ -17,7 +17,7 @@
 
         <!-- Package Version -->
         <PackageId>Serchugar.Base.Shared</PackageId>
-        <Version>0.1.0-preview.2</Version>
+        <Version>0.1.0-preview.3</Version>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
 
@@ -27,8 +27,10 @@
             Shared classes for other Serchugar.Base packages.
         </Description>
         <PackageReleaseNotes>
-            Added Response&lt;T&gt;.FromHttpResponseAsync() Factory method and Added XML docs in code. 
-            Renamed IPrimarykey to IPrimaryKey.
+            Fixed bug that occurred when HTTP responses with string payloads (text/plain) were being deserialized 
+            as JSON and causing exceptions in the ResponseT.FromHttpResponse factory method; now reads plain‐text 
+            content using HttpContent.ReadAsStringAsync().  
+            Also added BaseHttpRespository class, still to be tested.
         </PackageReleaseNotes>
         <PackageProjectUrl>https://github.com/serchugar/Base/tree/dev</PackageProjectUrl>
         <RepositoryUrl>https://github.com/serchugar/Base/tree/dev</RepositoryUrl>
