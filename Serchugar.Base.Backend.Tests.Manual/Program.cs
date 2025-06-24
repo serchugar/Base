@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Serchugar.Base.Backend.Tests.Manual.Configuration;
 using Serchugar.Base.Backend.Tests.Manual.Data;
+using Serchugar.Base.Backend.Tests.Manual.Middleware;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 if (builder.Environment.IsDevelopment()) builder.Configuration.AddUserSecrets<Program>();
@@ -17,6 +18,7 @@ if(builder.Environment.IsDevelopment()) builder.Services.AddSwaggerConfig();
 WebApplication app = builder.Build();
 #region Middleware
 if(app.Environment.IsDevelopment()) app.UseSwaggerConfig();
+app.UseCustomExceptionHandler();
 #endregion
 
 app.MapControllers();
