@@ -17,7 +17,7 @@
 
         <!-- Package Version -->
         <PackageId>Serchugar.Base.Backend</PackageId>
-        <Version>0.1.0-preview.4</Version>
+        <Version>0.1.0-preview.5</Version>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
 
@@ -27,9 +27,8 @@
             Generic base classes for Repository service, Controller and Response&lt;T&gt;.
         </Description>
         <PackageReleaseNotes>
-            Added Guid overload for GetById and Delete in BaseRepository.cs. 
-            Added XML comments to everything. 
-            Added ActionResult 200 OK for bulk create, update and delete operations.
+            Added StartupScanner. The new StartupScanner class removes the necessity of using IPrimaryKey to get the
+            createdAtURL for 201 Created ActionResults. It uses reflection but only once on app startup.
         </PackageReleaseNotes>
         <PackageProjectUrl>https://github.com/serchugar/Base/tree/dev</PackageProjectUrl>
         <RepositoryUrl>https://github.com/serchugar/Base/tree/dev</RepositoryUrl>
@@ -47,7 +46,7 @@
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
-        <PackageReference Include="Serchugar.Base.Shared" Version="0.1.0-preview.2" />
+        <PackageReference Include="Serchugar.Base.Shared" Version="0.1.0-preview.4" />
     </ItemGroup>
 
 </Project>
