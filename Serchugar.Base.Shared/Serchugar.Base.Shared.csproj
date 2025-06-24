@@ -17,7 +17,7 @@
 
         <!-- Package Version -->
         <PackageId>Serchugar.Base.Shared</PackageId>
-        <Version>0.1.0-preview.3</Version>
+        <Version>0.1.0-preview.4</Version>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
 
@@ -27,16 +27,13 @@
             Shared classes for other Serchugar.Base packages.
         </Description>
         <PackageReleaseNotes>
-            Fixed bug that occurred when HTTP responses with string payloads (text/plain) were being deserialized 
-            as JSON and causing exceptions in the ResponseT.FromHttpResponse factory method; now reads plain‐text 
-            content using HttpContent.ReadAsStringAsync().  
-            Also added BaseHttpRespository class, still to be tested.
+            Removed IPrimaryKey as is no longer neccessary with new StartupScanner class from Base.Backend.
         </PackageReleaseNotes>
         <PackageProjectUrl>https://github.com/serchugar/Base/tree/dev</PackageProjectUrl>
         <RepositoryUrl>https://github.com/serchugar/Base/tree/dev</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <Authors>Serchugar</Authors>
-        <PackageTags>backend;repository;controller;response;generic</PackageTags>
+        <PackageTags>backend;frontend;response;generic</PackageTags>
     </PropertyGroup>
 
     <!-- Same README and LICENSE as in github repo -->
