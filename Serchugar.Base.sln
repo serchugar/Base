@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serchugar.Base.Shared", "Se
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serchugar.Base.Shared.Tests.Unit", "Serchugar.Base.Shared.Tests.Unit\Serchugar.Base.Shared.Tests.Unit.csproj", "{25EF1BED-AB2E-438C-A1FD-DA24FD010CC9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serchugar.Base.Backend.Tests.Manual", "Serchugar.Base.Backend.Tests.Manual\Serchugar.Base.Backend.Tests.Manual.csproj", "{C64C9F2B-8C17-4BEB-96E5-0A637E029CA2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Shared|Any CPU = Shared|Any CPU
@@ -41,6 +43,12 @@ Global
 		{25EF1BED-AB2E-438C-A1FD-DA24FD010CC9}.Backend|Any CPU.ActiveCfg = Backend|Any CPU
 		{25EF1BED-AB2E-438C-A1FD-DA24FD010CC9}.Tests|Any CPU.ActiveCfg = Tests|Any CPU
 		{25EF1BED-AB2E-438C-A1FD-DA24FD010CC9}.Tests|Any CPU.Build.0 = Tests|Any CPU
+		{C64C9F2B-8C17-4BEB-96E5-0A637E029CA2}.Shared|Any CPU.ActiveCfg = Debug|Any CPU
+		{C64C9F2B-8C17-4BEB-96E5-0A637E029CA2}.Shared|Any CPU.Build.0 = Debug|Any CPU
+		{C64C9F2B-8C17-4BEB-96E5-0A637E029CA2}.Backend|Any CPU.ActiveCfg = Debug|Any CPU
+		{C64C9F2B-8C17-4BEB-96E5-0A637E029CA2}.Backend|Any CPU.Build.0 = Debug|Any CPU
+		{C64C9F2B-8C17-4BEB-96E5-0A637E029CA2}.Tests|Any CPU.ActiveCfg = Debug|Any CPU
+		{C64C9F2B-8C17-4BEB-96E5-0A637E029CA2}.Tests|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8CFBCE00-6EA3-4716-89FA-2B3F53E6321A} = {93BBCF8D-055D-4E96-A364-EF887FF0F9A6}
@@ -49,5 +57,6 @@ Global
 		{312630FC-10FF-4212-A0BC-CD03A33E3F59} = {93BBCF8D-055D-4E96-A364-EF887FF0F9A6}
 		{A6FA7B70-3A26-4D37-877F-30AD0C557703} = {5B727571-8145-4FFC-8897-A6AF61BCD53F}
 		{25EF1BED-AB2E-438C-A1FD-DA24FD010CC9} = {A6FA7B70-3A26-4D37-877F-30AD0C557703}
+		{C64C9F2B-8C17-4BEB-96E5-0A637E029CA2} = {AE5FCAD5-1270-4252-B0D1-B0DD9D61C58E}
 	EndGlobalSection
 EndGlobal

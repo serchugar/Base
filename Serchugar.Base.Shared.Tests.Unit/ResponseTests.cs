@@ -4,7 +4,7 @@ using Serchugar.Base.Shared.Tests.Unit.Entities;
 
 namespace Serchugar.Base.Shared.Tests.Unit;
 
-public class ResponseFactoryTests
+public class ResponseTests
 {
     [SetUp]
     public void Setup()
