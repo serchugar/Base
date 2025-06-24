@@ -8,6 +8,10 @@ namespace Serchugar.Base.Backend;
 /// </summary>
 public abstract class BaseController : ControllerBase
 {
+    // TODO: Add and modify XML Comments
+    protected ActionResult<T> SetResponse<T>(Response<T> response, bool includeLocationHeader = true) => 
+        SetResponse(response, includeLocationHeader, null);
+    
     /// <summary>
     /// Constructs an <see cref="ActionResult{T}"/> based on the provided <see cref="Response{T}"/>.
     /// </summary>
@@ -35,11 +39,11 @@ public abstract class BaseController : ControllerBase
     ///     • <see cref="ResponseCodes.Error"/> (default) → 500 Internal Server Error via <see cref="ProblemDetails"/>.</description></item>
     /// </list>
     /// </remarks>
-    protected ActionResult<T> SetResponse<T>(Response<T> response) => response.Code switch
+    protected ActionResult<T> SetResponse<T>(Response<T> response, bool includeLocationHeader, Type? controllerTypeOfCreatedEntity = null) => response.Code switch
     {
         // Success codes
         ResponseCodes.Success => Ok(response.Data), //Get entity, Get all, Get list. GET
-        ResponseCodes.Created => CreateWithLocation(response), // Create. POST
+        ResponseCodes.Created => CreateWithLocation(response, includeLocationHeader, controllerTypeOfCreatedEntity), // Create. POST
         ResponseCodes.Updated => SetUpdateOrDeleteActionResult(response), // Update. PUT
         ResponseCodes.Deleted => SetUpdateOrDeleteActionResult(response), // Delete. DELETE
         ResponseCodes.Empty => Ok(response.Data), //Get all, Get list. GET
@@ -65,24 +69,19 @@ public abstract class BaseController : ControllerBase
     /// <exception cref="InvalidOperationException">
     /// Thrown if <typeparamref name="T"/> does not implement <see cref="IPrimaryKey"/>, preventing retrieval of the entity's identifier.
     /// </exception>
-    private ActionResult<T> CreateWithLocation<T>(Response<T> response)
+    private ActionResult<T> CreateWithLocation<T>(Response<T> response, bool includeLocationHeader = true, Type? controllerType = null)
     {
-        // Create entity. POST
-        if (response.Data is IPrimaryKey singleEntity)
-            return CreatedAtAction(
-                actionName: RouteNames.GetById,
-                controllerName: null,
-                routeValues: new { id = singleEntity.Id },
-                value: response.Data
-            );
-        
         // Bulk create. POST
         if (response.Data is string)
             return Ok(response.Data);
         
-        // This uses reflection but in theory it should never happen if things done right, as all classes should inherit
-        // from IPrimaryKey to be able to get their id for the CreateWithLocation
-        throw new InvalidOperationException($"Make sure class {typeof(T).Name} inherits from {nameof(IPrimaryKey)} and set the property 'public {nameof(IPrimaryKey)}.{nameof(IPrimaryKey.Id)} => <class id property>'");
+        // Create entity. POST
+        if (!includeLocationHeader) return Created("", response.Data);
+        
+        Type type = controllerType ?? GetType();
+        string prefix = StartupScanner.GetControllerRoute(type);
+        object id = StartupScanner.GetEntityKey(response.Data!)!;
+        return Created($"{prefix}/{id}", response.Data);
     }
 
     /// <summary>

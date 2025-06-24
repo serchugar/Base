@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Serchugar.Base.Backend;
 using Serchugar.Base.Backend.Tests.Manual.Configuration;
 using Serchugar.Base.Backend.Tests.Manual.Data;
 using Serchugar.Base.Backend.Tests.Manual.Middleware;
@@ -19,6 +20,11 @@ WebApplication app = builder.Build();
 #region Middleware
 if(app.Environment.IsDevelopment()) app.UseSwaggerConfig();
 app.UseCustomExceptionHandler();
+#endregion
+
+#region Startup
+app.DiscoverKeyedEntities();
+app.DiscoverControllerRoutes();
 #endregion
 
 app.MapControllers();
