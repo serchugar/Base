@@ -288,10 +288,10 @@ public abstract class BaseRepository<T> where T : class
         {
             transaction = await _context.Database.BeginTransactionAsync(ct);
             _context.Set<T>().Add(entity);
-            
+
             await _context.SaveChangesAsync(ct);
             await transaction.CommitAsync(ct);
-            
+
             return Response<T>.FromSuccess(ResponseCodes.Created, entity);
         }
         catch (Exception ex)

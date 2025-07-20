@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Serchugar.Base.Backend;
 
 // TODO: Add and modify XML Comments
+// TODO: Make default behaviour of methods to scan all referenced assemblies. Make overload with and without params
 public static class StartupScanner
 {
     private static readonly ConcurrentDictionary<Type, Func<object, object?>> KeyedProperties = new();

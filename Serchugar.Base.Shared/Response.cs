@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json.Serialization;
 
 namespace Serchugar.Base.Shared;
 
@@ -41,6 +42,7 @@ public class Response<T> : IResponse
     /// Gets the <see cref="ResponseCodes"/> that indicates whether the operation was successful
     /// or the specific type of error that occurred.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public ResponseCodes Code { get; }
     /// <summary>
     /// Gets the result data when the operation succeeds; otherwise, null.

@@ -105,22 +105,3 @@ public abstract class BaseController : ControllerBase
         return NoContent();
     }
 }
-
-/// <summary>
-/// This should be used in every controller once. This is necessary to construct the CreatedAt URL when POST method
-/// for when <see cref="ResponseCodes"/> is 'Created' in a <see cref="Response{T}"/>.
-/// </summary>
-/// <example>
-/// In a Controller, in the GetById or GetByGuid method, set: <code>[HttpGet("{id}", Name = RouteNames.GetById)]</code>
-/// </example>
-public static class RouteNames
-{
-    /// <summary>
-    /// This should be used in every controller once. This is necessary to construct the CreatedAt URL when POST method
-    /// for when <see cref="ResponseCodes"/> is 'Created' in a <see cref="Response{T}"/>.
-    /// </summary>
-    /// <example>
-    /// In a Controller, in the GetById or GetByGuid method, set: <code>[HttpGet("{id}", Name = RouteNames.GetById)]</code>
-    /// </example>
-    public const string GetById = nameof(GetById);
-}
