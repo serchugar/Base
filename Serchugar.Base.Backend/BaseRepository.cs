@@ -397,36 +397,18 @@ public abstract class BaseRepository<T> where T : class
     {
         if (id <= 0) return Response<T>.FromError(ResponseCodes.BadRequest, "Id must be greater than zero");
 
-        T? entity = null;
-        IDbContextTransaction? transaction = null;
         try
         {
-            entity = await _context.FindAsync<T>([id], ct);
+            T? entity = await _context.FindAsync<T>([id], ct);
             if (entity is null) return Response<T>.FromError(ResponseCodes.NotFound, $"{_singular} not found");
             
-            transaction = await _context.Database.BeginTransactionAsync(ct);
-            _context.Set<T>().Remove(entity);
-
-            await _context.SaveChangesAsync(ct);
-            await transaction.CommitAsync(ct);
-
-            return Response<T>.FromSuccess(ResponseCodes.Deleted, entity);
+            return await DeleteAsync(entity, ct);
         }
         catch (Exception ex)
         {
-            if (transaction is not null)
-            {
-                await transaction.RollbackAsync(ct);
-                _context.Entry(entity!).State = EntityState.Detached;
-            }
-
             return Response<T>.FromError(
                 ResponseCodes.Error,
                 ex.InnerException?.Data["MessageText"]?.ToString() ?? ex.Message);
-        }
-        finally
-        {
-            if (transaction is not null) await transaction.DisposeAsync();
         }
     }
     
@@ -461,36 +443,18 @@ public abstract class BaseRepository<T> where T : class
     {
         if (id == Guid.Empty) return Response<T>.FromError(ResponseCodes.BadRequest, "Id must be a non-empty GUID");
 
-        T? entity = null;
-        IDbContextTransaction? transaction = null;
         try
         {
-            entity = await _context.FindAsync<T>([id], ct);
+            T? entity = await _context.FindAsync<T>([id], ct);
             if (entity is null) return Response<T>.FromError(ResponseCodes.NotFound, $"{_singular} not found");
             
-            transaction = await _context.Database.BeginTransactionAsync(ct);
-            _context.Set<T>().Remove(entity);
-
-            await _context.SaveChangesAsync(ct);
-            await transaction.CommitAsync(ct);
-
-            return Response<T>.FromSuccess(ResponseCodes.Deleted, entity);
+            return await DeleteAsync(entity, ct);
         }
         catch (Exception ex)
         {
-            if (transaction is not null)
-            {
-                await transaction.RollbackAsync(ct);
-                _context.Entry(entity!).State = EntityState.Detached;
-            }
-
             return Response<T>.FromError(
                 ResponseCodes.Error,
                 ex.InnerException?.Data["MessageText"]?.ToString() ?? ex.Message);
-        }
-        finally
-        {
-            if (transaction is not null) await transaction.DisposeAsync();
         }
     }
     
