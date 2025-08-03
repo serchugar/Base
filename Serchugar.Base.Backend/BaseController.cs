@@ -8,15 +8,13 @@ namespace Serchugar.Base.Backend;
 /// </summary>
 public abstract class BaseController : ControllerBase
 {
-    // TODO: Add and modify XML Comments
-    protected ActionResult<T> SetResponse<T>(Response<T> response, bool includeLocationHeader = true) => 
-        SetResponse(response, includeLocationHeader, null);
-    
     /// <summary>
     /// Constructs an <see cref="ActionResult{T}"/> based on the provided <see cref="Response{T}"/>.
     /// </summary>
     /// <typeparam name="T">The type of the response payload.</typeparam>
     /// <param name="response">The response object containing the status code, data, and optional error message.</param>
+    /// <param name="includeLocationHeader">Indicates whether to include the Location header for single entity creation.</param>
+    /// <param name="controllerTypeOfCreatedEntity">The controller type used to resolve the route for the Location header. If null, uses the current controller type.</param>
     /// <returns>An <see cref="ActionResult{T}"/> corresponding to the response code.</returns>
     /// <remarks>
     /// <para>Interpretation logic grouped by HTTP outcome:</para>
@@ -39,7 +37,7 @@ public abstract class BaseController : ControllerBase
     ///     • <see cref="ResponseCodes.Error"/> (default) → 500 Internal Server Error via <see cref="ProblemDetails"/>.</description></item>
     /// </list>
     /// </remarks>
-    protected ActionResult<T> SetResponse<T>(Response<T> response, bool includeLocationHeader, Type? controllerTypeOfCreatedEntity = null) => response.Code switch
+    protected ActionResult<T> SetResponse<T>(Response<T> response, bool includeLocationHeader = true, Type? controllerTypeOfCreatedEntity = null) => response.Code switch
     {
         // Success codes
         ResponseCodes.Success => Ok(response.Data), //Get entity, Get all, Get list. GET
@@ -62,12 +60,13 @@ public abstract class BaseController : ControllerBase
     /// </summary>
     /// <typeparam name="T">The type of the created entity or bulk create result.</typeparam>
     /// <param name="response">The response containing the created entity or bulk result.</param>
+    /// <param name="includeLocationHeader">Indicates whether to include the Location header for single entity creation.</param>
+    /// <param name="controllerType">The controller type used to resolve the route for the Location header. If null, uses the current controller type.</param>
     /// <returns>
     /// 201 <see cref="CreatedAtActionResult"/> including Location header for single entity.<br/>
     /// 200 <see cref="OkResult"/> for bulk create. <see cref="Response{T}.Data"/> must be a string in this case.
     /// </returns>
     /// <exception cref="InvalidOperationException">
-    /// Thrown if <typeparamref name="T"/> does not implement <see cref="IPrimaryKey"/>, preventing retrieval of the entity's identifier.
     /// </exception>
     private ActionResult<T> CreateWithLocation<T>(Response<T> response, bool includeLocationHeader = true, Type? controllerType = null)
     {
