@@ -37,9 +37,11 @@ public abstract class BaseRepository<T> where T : class
     /// <summary>
     /// Asynchronously retrieves all instances of <typeparamref name="T"/> from the database.
     /// </summary>
+    /// <param name="withAutoIncludes">
+    /// If <c>true</c>, includes related navigation properties configured on the context; otherwise ignores auto-includes.
+    /// </param>
     /// <param name="ct">
     /// A <see cref="CancellationToken"/> that can be used to cancel the operation.
-    /// Defaults to <see cref="CancellationToken.None"/>.
     /// </param>
     /// <returns>
     /// A <see cref="Response{T}"/> of <see cref="IEnumerable{T}"/> containing:
@@ -55,11 +57,13 @@ public abstract class BaseRepository<T> where T : class
     ///   </item>
     /// </list>
     /// </returns>
-    protected virtual async Task<Response<IEnumerable<T>>> GetAllAsync(CancellationToken ct = default)
+    protected virtual async Task<Response<IEnumerable<T>>> GetAllAsync(bool withAutoIncludes = false, CancellationToken ct = default)
     {
         try
         {
-            IEnumerable<T> result = await _context.Set<T>().IgnoreAutoIncludes().ToListAsync(ct);
+            IEnumerable<T> result = withAutoIncludes 
+                ? await _context.Set<T>().ToListAsync(ct)
+                : await _context.Set<T>().IgnoreAutoIncludes().ToListAsync(ct);
             if (!result.Any()) return Response<IEnumerable<T>>.FromSuccess(ResponseCodes.Empty, []);
             
             return Response<IEnumerable<T>>.FromSuccess(ResponseCodes.Success, result);
@@ -80,7 +84,6 @@ public abstract class BaseRepository<T> where T : class
     /// </param>
     /// <param name="ct">
     /// A <see cref="CancellationToken"/> that can be used to cancel the operation.
-    /// Defaults to <see cref="CancellationToken.None"/>.
     /// </param>
     /// <returns>
     /// A <see cref="Response{T}"/> containing:
@@ -126,7 +129,6 @@ public abstract class BaseRepository<T> where T : class
     /// </param>
     /// <param name="ct">
     /// A <see cref="CancellationToken"/> that can be used to cancel the operation.
-    /// Defaults to <see cref="CancellationToken.None"/>.
     /// </param>
     /// <returns>
     /// A <see cref="Response{T}"/> containing:
@@ -172,11 +174,9 @@ public abstract class BaseRepository<T> where T : class
     /// </param>
     /// <param name="withAutoIncludes">
     /// If <c>true</c>, includes related navigation properties configured on the context; otherwise ignores auto-includes.
-    /// Defaults to <c>false</c>.
     /// </param>
     /// <param name="ct">
     /// A <see cref="CancellationToken"/> that can be used to cancel the operation.
-    /// Defaults to <see cref="CancellationToken.None"/>.
     /// </param>
     /// <returns>
     /// A <see cref="Response{T}"/> of <see cref="IEnumerable{T}"/> containing:
@@ -219,11 +219,9 @@ public abstract class BaseRepository<T> where T : class
     /// </param>
     /// <param name="withAutoIncludes">
     /// If <c>true</c>, includes related navigation properties configured on the context; otherwise ignores auto-includes.
-    /// Defaults to <c>false</c>.
     /// </param>
     /// <param name="ct">
     /// A <see cref="CancellationToken"/> that can be used to cancel the operation.
-    /// Defaults to <see cref="CancellationToken.None"/>.
     /// </param>
     /// <returns>
     /// A <see cref="Response{T}"/> containing:
@@ -239,7 +237,7 @@ public abstract class BaseRepository<T> where T : class
     ///   </item>
     /// </list>
     /// </returns>
-    protected virtual async Task<Response<T>> GetFirstByFilterAsync(Expression<Func<T, bool>> expression, bool withAutoIncludes = false, CancellationToken ct = default)
+    protected virtual async Task<Response<T>> GetFirstByFilterAsync(Expression<Func<T, bool>> expression, bool withAutoIncludes = true, CancellationToken ct = default)
     {
         try
         {
@@ -268,7 +266,6 @@ public abstract class BaseRepository<T> where T : class
     /// </param>
     /// <param name="ct">
     /// A <see cref="CancellationToken"/> that can be used to cancel the operation.
-    /// Defaults to <see cref="CancellationToken.None"/>.
     /// </param>
     /// <returns>
     /// A <see cref="Response{T}"/> containing:
@@ -322,7 +319,6 @@ public abstract class BaseRepository<T> where T : class
     /// </param>
     /// <param name="ct">
     /// A <see cref="CancellationToken"/> that can be used to cancel the operation.
-    /// Defaults to <see cref="CancellationToken.None"/>.
     /// </param>
     /// <returns>
     /// A <see cref="Response{T}"/> containing:
@@ -374,7 +370,6 @@ public abstract class BaseRepository<T> where T : class
     /// </param>
     /// <param name="ct">
     /// A <see cref="CancellationToken"/> that can be used to cancel the operation.
-    /// Defaults to <see cref="CancellationToken.None"/>.
     /// </param>
     /// <returns>
     /// A <see cref="Response{T}"/> containing:
@@ -420,7 +415,6 @@ public abstract class BaseRepository<T> where T : class
     /// </param>
     /// <param name="ct">
     /// A <see cref="CancellationToken"/> that can be used to cancel the operation.
-    /// Defaults to <see cref="CancellationToken.None"/>.
     /// </param>
     /// <returns>
     /// A <see cref="Response{T}"/> containing:
@@ -468,7 +462,6 @@ public abstract class BaseRepository<T> where T : class
     /// </param>
     /// <param name="ct">
     /// A <see cref="CancellationToken"/> that can be used to cancel the operation.
-    /// Defaults to <see cref="CancellationToken.None"/>.
     /// </param>
     /// <returns>
     /// A <see cref="Response{T}"/> containing:
@@ -524,7 +517,6 @@ public abstract class BaseRepository<T> where T : class
     /// </param>
     /// <param name="ct">
     /// A <see cref="CancellationToken"/> that can be used to cancel the operation.
-    /// Defaults to <see cref="CancellationToken.None"/>.
     /// </param>
     /// <returns>
     /// A <see cref="Response{T}"/> containing:
@@ -589,7 +581,7 @@ public abstract class BaseRepository<T> where T : class
     /// The maximum number of entities to insert per batch. Defaults to <c>500</c>.
     /// </param>
     /// <param name="ct">
-    /// A <see cref="CancellationToken"/> to cancel the operation. Defaults to <see cref="CancellationToken.None"/>.
+    /// A <see cref="CancellationToken"/> to cancel the operation.
     /// </param>
     /// <returns>
     /// A <see cref="Response{String}"/> containing:
@@ -655,7 +647,7 @@ public abstract class BaseRepository<T> where T : class
     /// The maximum number of entities to update per batch. Defaults to <c>500</c>.
     /// </param>
     /// <param name="ct">
-    /// A <see cref="CancellationToken"/> to cancel the operation. Defaults to <see cref="CancellationToken.None"/>.
+    /// A <see cref="CancellationToken"/> to cancel the operation.
     /// </param>
     /// <returns>
     /// A <see cref="Response{String}"/> containing:
@@ -716,7 +708,7 @@ public abstract class BaseRepository<T> where T : class
     /// The maximum number of entities to delete per batch. Defaults to <c>500</c>.
     /// </param>
     /// <param name="ct">
-    /// A <see cref="CancellationToken"/> to cancel the operation. Defaults to <see cref="CancellationToken.None"/>.
+    /// A <see cref="CancellationToken"/> to cancel the operation.
     /// </param>
     /// <returns>
     /// A <see cref="Response{String}"/> containing:
@@ -773,7 +765,6 @@ public abstract class BaseRepository<T> where T : class
     /// </param>
     /// <param name="ct">
     /// A <see cref="CancellationToken"/> that can be used to cancel the operation.
-    /// Defaults to <see cref="CancellationToken.None"/>.
     /// </param>
     /// <returns>
     /// A <see cref="Response{Bool}"/> containing:
@@ -806,6 +797,44 @@ public abstract class BaseRepository<T> where T : class
     }
     
     /// <summary>
+    /// Asynchronously counts the number of entities of type <typeparamref name="T"/> that match the specified filter.
+    /// </summary>
+    /// <param name="filter">
+    /// An optional filter expression to select which entities to count. If <c>null</c>, all entities are counted.
+    /// </param>
+    /// <param name="ct">
+    /// A <see cref="CancellationToken"/> that can be used to cancel the operation.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Response{Int32}"/> containing:
+    /// <list type="bullet">
+    ///   <item>
+    ///     <description>The count of entities on success (<see cref="ResponseCodes.Success"/>).</description>
+    ///   </item>
+    ///   <item>
+    ///     <description>An error code and exception message if an exception occurs (<see cref="ResponseCodes.Error"/>).</description>
+    ///   </item>
+    /// </list>
+    /// </returns>
+    protected virtual async Task<Response<int>> CountAsync(Expression<Func<T, bool>>? filter = null, CancellationToken ct = default)
+    {
+        try
+        {
+            int count = filter is null 
+                ? await _context.Set<T>().IgnoreAutoIncludes().CountAsync(ct)
+                : await _context.Set<T>().IgnoreAutoIncludes().CountAsync(filter, ct);
+            
+            return Response<int>.FromSuccess(ResponseCodes.Success, count);
+        }
+        catch (Exception ex)
+        {
+            return Response<int>.FromError(
+                ResponseCodes.Error,
+                ex.InnerException?.Data["MessageText"]?.ToString() ?? ex.Message);
+        }
+    }
+    
+    /// <summary>
     /// Asynchronously executes the creation of a batch of entities of type <typeparamref name="T"/> within a transaction.
     /// </summary>
     /// <param name="batch">
@@ -813,7 +842,6 @@ public abstract class BaseRepository<T> where T : class
     /// </param>
     /// <param name="ct">
     /// A <see cref="CancellationToken"/> that can be used to cancel the operation.
-    /// Defaults to <see cref="CancellationToken.None"/>.
     /// </param>
     /// <returns>
     /// A <see cref="Response{Int32}"/> containing:
@@ -865,7 +893,6 @@ public abstract class BaseRepository<T> where T : class
     /// </param>
     /// <param name="ct">
     /// A <see cref="CancellationToken"/> that can be used to cancel the operation.
-    /// Defaults to <see cref="CancellationToken.None"/>.
     /// </param>
     /// <returns>
     /// A <see cref="Response{Int32}"/> containing:
@@ -919,7 +946,6 @@ public abstract class BaseRepository<T> where T : class
     /// </param>
     /// <param name="ct">
     /// A <see cref="CancellationToken"/> that can be used to cancel the operation.
-    /// Defaults to <see cref="CancellationToken.None"/>.
     /// </param>
     /// <returns>
     /// A <see cref="Response{Int32}"/> containing:
