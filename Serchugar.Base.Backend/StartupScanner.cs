@@ -20,7 +20,8 @@ public static class StartupScanner
     
     /// <summary>
     /// Scans the specified assembly (or all loaded assemblies if none is provided) to discover entity types with a property marked by <see cref="KeyAttribute"/>.
-    /// Stores a compiled delegate for retrieving the key property value for each discovered entity type.
+    /// Stores a compiled delegate for retrieving the key property value for each discovered entity type.<br/><br/>
+    /// This method is needed so that the SetResponse&lt;T&gt; method from <see cref="Serchugar.Base.Backend.BaseController"/> can build the Location header. 
     /// </summary>
     /// <param name="app">The <see cref="IApplicationBuilder"/> instance used to access application services.</param>
     /// <param name="assembly">The assembly to scan for entity types. If <c>null</c>, all loaded assemblies are scanned.</param>
@@ -56,50 +57,56 @@ public static class StartupScanner
     }
 
     /// <summary>
-    /// Scans the specified assembly (or the calling assembly if none is provided) to discover controller types and their route templates.
-    /// Stores the route prefix for each controller type for later use (e.g., generating Location headers).
+    /// Scans the specified assembly (or all loaded assemblies if none is provided) to discover controller types and their route templates.
+    /// Stores the route prefix for each controller type for later use (e.g., generating Location headers).<br/><br/>
+    /// This method is needed so that the SetResponse&lt;T&gt; method from <see cref="Serchugar.Base.Backend.BaseController"/> can build the Location header.
     /// </summary>
     /// <param name="app">The <see cref="IApplicationBuilder"/> instance used to access application services.</param>
-    /// <param name="assembly">The assembly to scan for controller types. If <c>null</c>, the calling assembly is used.</param>
+    /// <param name="assembly">The assembly to scan for controller types. If <c>null</c>, all loaded assemblies are scanned.</param>
     public static void DiscoverControllerRoutes(this IApplicationBuilder app, Assembly? assembly = null)
     {
-        Assembly asm = assembly ?? Assembly.GetCallingAssembly();
-        
-        var actionProvider = app.ApplicationServices
-            .GetRequiredService<IActionDescriptorCollectionProvider>();
+        IEnumerable<Assembly> assemblies = assembly != null
+            ? [assembly]
+            : AppDomain.CurrentDomain.GetAssemblies();
 
-        var byController = actionProvider.ActionDescriptors.Items.OfType<ControllerActionDescriptor>()
-            .Where(cad => cad.ControllerTypeInfo.Assembly == asm).GroupBy(cad => cad.ControllerTypeInfo.AsType());
-
-        foreach (var grp in byController)
+        foreach (Assembly asm in assemblies)
         {
-            var controllerType = grp.Key;
-            
-            var classRoute = controllerType.GetCustomAttribute<RouteAttribute>(inherit: true);
-            if (classRoute == null || string.IsNullOrWhiteSpace(classRoute.Template)) continue;
-            string template = classRoute.Template;
-            
-            var anyAction = grp.FirstOrDefault(cad => cad.AttributeRouteInfo != null);
-            if (anyAction == null) continue;
-            var routeValues = anyAction.RouteValues;
-            
-            string resolved = System.Text.RegularExpressions.Regex.Replace(
-                template,
-                @"\[(\w+)\]",
-                m =>
-                {
-                    var key = m.Groups[1].Value;
-                    return routeValues.TryGetValue(key, out var value)
-                        ? value!
-                        : m.Value;
-                });
+            var actionProvider = app.ApplicationServices
+                .GetRequiredService<IActionDescriptorCollectionProvider>();
 
-            int idx = resolved.IndexOf("/{", StringComparison.Ordinal);
-            string prefix = idx >= 0
-                ? resolved[..idx]
-                : resolved;
+            var byController = actionProvider.ActionDescriptors.Items.OfType<ControllerActionDescriptor>()
+                .Where(cad => cad.ControllerTypeInfo.Assembly == asm).GroupBy(cad => cad.ControllerTypeInfo.AsType());
 
-            ControllerRoutes[controllerType] = prefix;
+            foreach (var grp in byController)
+            {
+                var controllerType = grp.Key;
+            
+                var classRoute = controllerType.GetCustomAttribute<RouteAttribute>(inherit: true);
+                if (classRoute == null || string.IsNullOrWhiteSpace(classRoute.Template)) continue;
+                string template = classRoute.Template;
+            
+                var anyAction = grp.FirstOrDefault(cad => cad.AttributeRouteInfo != null);
+                if (anyAction == null) continue;
+                var routeValues = anyAction.RouteValues;
+            
+                string resolved = System.Text.RegularExpressions.Regex.Replace(
+                    template,
+                    @"\[(\w+)\]",
+                    m =>
+                    {
+                        var key = m.Groups[1].Value;
+                        return routeValues.TryGetValue(key, out var value)
+                            ? value!
+                            : m.Value;
+                    });
+
+                int idx = resolved.IndexOf("/{", StringComparison.Ordinal);
+                string prefix = idx >= 0
+                    ? resolved[..idx]
+                    : resolved;
+
+                ControllerRoutes[controllerType] = prefix;
+            }
         }
     }
 
