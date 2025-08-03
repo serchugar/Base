@@ -17,7 +17,7 @@
 
         <!-- Package Version -->
         <PackageId>Serchugar.Base.Backend</PackageId>
-        <Version>0.1.0-preview.5</Version>
+        <Version>0.1.0-rc.1</Version>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
 
@@ -27,8 +27,10 @@
             Generic base classes for Repository service, Controller and Response&lt;T&gt;.
         </Description>
         <PackageReleaseNotes>
-            Added StartupScanner. The new StartupScanner class removes the necessity of using IPrimaryKey to get the
-            createdAtURL for 201 Created ActionResults. It uses reflection but only once on app startup.
+            Added CountAsync method to BaseRepository.
+            Added 'withAutoInclude' parameter to BaseRepository Getter methods that support it.
+            Changed StartupScanner default behavior to scan all assemblies for Controller Routes and [Key] attributes.
+            Added XML documentation for all methods and classes.
         </PackageReleaseNotes>
         <PackageProjectUrl>https://github.com/serchugar/Base/tree/dev</PackageProjectUrl>
         <RepositoryUrl>https://github.com/serchugar/Base/tree/dev</RepositoryUrl>
